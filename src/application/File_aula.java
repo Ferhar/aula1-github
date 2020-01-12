@@ -1,23 +1,25 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class File_aula {
 
 	public static void main(String[] args) {
 
-		String path = "C:\\Users\\ferna\\OneDrive\\Área de Trabalho\\AulaJava\\in.txt";
+		String[] lines = new String[] { "Good morning", "Good afternoon", "Good night" };
 		
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-			String line = br.readLine();
-			while (line != null) {
-				System.out.println(line);
-				line = br.readLine();
+		String path = "C:\\Users\\ferna\\OneDrive\\Área de Trabalho\\AulaJava\\out.txt";
+		
+		//new FileWriter(path, true) incrementa o arquivo
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
+			for (String line : lines) {
+				bw.write(line);
+				bw.newLine();
 			}
 		} catch (IOException e) {
-			System.out.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
