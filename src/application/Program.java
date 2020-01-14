@@ -1,24 +1,48 @@
 package application;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Scanner;
 
-import entites.Order;
-import entites.enums.OrderStatus;
+import model.entities.CarRental;
+import model.entities.Vehicle;
+import model.services.BrazilTaxService;
+import model.services.RentalService;
 
 public class Program {
 
-	public static void main(String[] args) {
-		Order order = new Order(1080, new Date(), OrderStatus.PENDING_PAYMENT);
+	public static void main(String[] args) throws ParseException {
 
-		System.out.println(order);
+		Locale.setDefault(Locale.US);
+		Scanner sc = new Scanner(System.in);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		System.out.println("Enter rental data");
+		System.out.print("Car model: ");
+		String carModel = sc.nextLine();
+		System.out.print("Pickup (dd/MM/yyyy HH:mm): ");
+		Date start = sdf.parse(sc.nextLine());
+		System.out.print("Return (dd/MM/yyyy HH:mm): ");
+		Date finish = sdf.parse(sc.nextLine());
+		
+		CarRental cr = new CarRental(start, finish, new Vehicle(carModel));
 
-		OrderStatus os1 = OrderStatus.DELIVERED;
+		System.out.print("Enter price per hour: ");
+		double pricePerHour = sc.nextDouble();
+		System.out.print("Enter price per day: ");
+		double pricePerDay = sc.nextDouble();
+		
+		RentalService rentalService = new RentalService(pricePerDay, pricePerHour, new BrazilTaxService());
+		
+		rentalService.processInvoice(cr);
 
-		OrderStatus os2 = OrderStatus.valueOf("DELIVERED");
-
-		System.out.println(os1);
-		System.out.println(os2);
-
+		System.out.println("INVOICE:");
+		System.out.println("Basic payment: " + String.format("%.2f", cr.getInvoice().getBasicPayment()));
+		System.out.println("Tax: " + String.format("%.2f", cr.getInvoice().getTax()));
+		System.out.println("Total payment: " + String.format("%.2f", cr.getInvoice().getTotalPayment()));
+		
+		sc.close();
 	}
-
 }
